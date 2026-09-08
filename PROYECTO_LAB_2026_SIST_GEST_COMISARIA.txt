@@ -1,0 +1,33 @@
+INTEGRANTES: JINENA CHAVEZ - JIMENA QUENALLATA - JOAQUIN CHOQUEHUANCA
+
+Sistema de gestión de denuncias para una comisaría
+
+¿QUÉ ES?
+
+Es un sistema destinado a gestionar las denuncias que ingresan en una comisaría. Permite registrar, organizar, consultar y realizar el seguimiento de los casos desde su recepción hasta su cierre.
+
+El sistema contempla denuncias habituales como robos, hurtos, pérdidas, daños, amenazas, accidentes y documentación perdida, entre otras. Además, incluye una sección complementaria para fraudes bancarios virtuales, limitada a ingeniería social, phishing y malware.
+
+¿PARA QUÉ SIRVE?
+
+Su objetivo es facilitar el trabajo del personal de la comisaría mediante la organización de la información de cada denuncia. Permite registrar los datos del denunciante y del hecho, asignar un identificador, consultar casos, actualizar su estado y obtener estadísticas generales.
+
+USUARIOS
+
+DENUNCIANTE: persona que realiza la denuncia y proporciona la información sobre el hecho.
+
+RECEPCIONISTA O INTERMEDIARIO: recibe al denunciante y utiliza el sistema para registrar, consultar y actualizar las denuncias.
+
+ADMINISTRADOR: gestiona los usuarios, consulta las denuncias, controla los casos y obtiene estadísticas.
+
+FUNCIONAMIENTO
+
+El denunciante informa el hecho al recepcionista, quien registra la denuncia y los datos correspondientes. El caso recibe un identificador y puede pasar por distintos estados, como registrada, en gestión, derivada, resuelta o cerrada.
+
+El administrador puede consultar y controlar las denuncias registradas y obtener estadísticas sobre los casos.
+
+En las denuncias relacionadas con fraudes bancarios virtuales, el sistema permite registrar información adicional y consultar una orientación básica según el tipo de fraude.
+
+OBJETIVO
+
+Desarrollar un sistema que permita organizar y facilitar el registro, consulta y seguimiento de las denuncias realizadas en una comisaría, mejorando la gestión de la información y el control de los casos.
