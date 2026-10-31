@@ -87,3 +87,53 @@ SubProceso respuesta <- LeerSiNo(mensaje)
 	Hasta Que r = "S" O r = "N"
 	respuesta <- (r = "S");
 FinSubProceso
+
+// =====================================================================
+//  MODULO: USUARIOS Y SESION
+// =====================================================================
+
+// Carga los usuarios de prueba y devuelve cuantos quedaron cargados
+SubProceso cant <- InicializarUsuarios(usrNombre, usrClave, usrRol, usrActivo)
+	Definir cant Como Entero;
+	usrNombre[1] <- "admin";
+	usrClave[1] <- "admin123";
+	usrRol[1] <- 1;
+	usrActivo[1] <- Verdadero;
+	usrNombre[2] <- "recep";
+	usrClave[2] <- "recep123";
+	usrRol[2] <- 2;
+	usrActivo[2] <- Verdadero;
+	cant <- 2;
+FinSubProceso
+
+// Devuelve la posicion del usuario que ingreso, o 0 si fallo 3 veces
+SubProceso pos <- IniciarSesion(usrNombre, usrClave, usrActivo, cantUsr)
+	Definir pos, i, intentos Como Entero;
+	Definir nombre, clave Como Caracter;
+	Definir encontrado Como Logico;
+	pos <- 0;
+	intentos <- 0;
+	encontrado <- Falso;
+	Repetir
+		Escribir Sin Saltar "Usuario: ";
+		Leer nombre;
+		Escribir Sin Saltar "Clave: ";
+		Leer clave;
+		i <- 1;
+		Mientras i <= cantUsr Y NO encontrado Hacer
+			Si usrNombre[i] = nombre Y usrClave[i] = clave Y usrActivo[i] = Verdadero Entonces
+				encontrado <- Verdadero;
+				pos <- i;
+			FinSi
+			i <- i + 1;
+		FinMientras
+		intentos <- intentos + 1;
+		Si NO encontrado Entonces
+			Escribir "Usuario o clave incorrectos (intento ", intentos, " de 3).";
+		FinSi
+	Hasta Que encontrado O intentos = 3
+	Si encontrado Entonces
+		Escribir "Bienvenido/a, ", usrNombre[pos], ".";
+	FinSi
+FinSubProceso
+
