@@ -1,8 +1,36 @@
-Definir usrNombre, usrClave Como Caracter;
+Algoritmo PROYECTO_COMISARIA
+	
+	Definir MAX_USR, MAX_DEN Como Entero;
+    Definir cantUsr, cantDen, posUsr, op Como Entero;
+	
+    MAX_USR <- 20;
+    MAX_DEN <- 100;
+    cantDen <- 0;
+	
+	Definir usrNombre, usrClave Como Caracter;
 	Definir usrRol Como Entero;
 	Definir usrActivo Como Logico;
 	Dimension usrNombre[20], usrClave[20], usrRol[20], usrActivo[20];
 	cantUsr <- InicializarUsuarios(usrNombre, usrClave, usrRol, usrActivo);
+	
+	Definir denNombre, denDni, denTelefono Como Caracter;
+    Definir denFecha, denLugar, denDescripcion Como Caracter;
+    Definir denCategoria, denEstado Como Entero;
+    Definir fraTipo Como Entero;
+    Definir fraEntidad Como Caracter;
+    Definir fraMonto Como Real;
+	
+    Dimension denNombre[100];
+    Dimension denDni[100];
+    Dimension denTelefono[100];
+    Dimension denFecha[100];
+    Dimension denLugar[100];
+    Dimension denDescripcion[100];
+    Dimension denCategoria[100];
+    Dimension denEstado[100];
+    Dimension fraTipo[100];
+    Dimension fraEntidad[100];
+    Dimension fraMonto[100];
 	
 	Repetir
 		Escribir "";
@@ -587,4 +615,3 @@ SubProceso cantFinal <- MenuAdministrador(posUsr, usrNombre, usrClave, usrRol, u
 		FinSegun
 	Hasta Que op = 0
 FinSubProceso
-
