@@ -313,4 +313,104 @@ SubProceso MostrarTiposFraude
 	Escribir "3. Malware (programa o aplicacion maliciosa en el dispositivo)";
 FinSubProceso
 
+// =====================================================================
+//  MODULO: REGISTRO DE DENUNCIAS
+// =====================================================================
+
+// Unico lugar donde se define como se arma el ID (facil de cambiar)
+SubProceso id <- IdDeDenuncia(pos)
+	Definir id Como Entero;
+	id <- 1000 + pos;
+FinSubProceso
+
+// Devuelve la posicion de la denuncia con ese ID, o 0 si no existe
+SubProceso pos <- BuscarPorId(id, cantDen)
+	Definir pos Como Entero;
+	pos <- id - 1000;
+	Si pos < 1 O pos > cantDen Entonces
+		pos <- 0;
+	FinSi
+FinSubProceso
+
+// Devuelve la nueva cantidad de denuncias (igual a la anterior si no habia lugar)
+SubProceso nuevaCant <- RegistrarDenuncia(denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto, cantDen, MAX_DEN)
+	Definir nuevaCant, i Como Entero;
+	nuevaCant <- cantDen;
+	Si cantDen >= MAX_DEN Entonces
+		Escribir "No hay espacio para registrar nuevas denuncias.";
+	SiNo
+		i <- cantDen + 1;
+		Escribir "";
+		Escribir "--- Datos del denunciante ---";
+		denNombre[i] <- LeerTextoNoVacio("Nombre y apellido: ");
+		denDni[i] <- LeerDni();
+		denTelefono[i] <- LeerTextoNoVacio("Telefono de contacto: ");
+		Escribir "--- Datos del hecho ---";
+		MostrarCategorias();
+		denCategoria[i] <- LeerEnteroEnRango("Categoria: ", 1, 9);
+		denFecha[i] <- LeerTextoNoVacio("Fecha del hecho (DD/MM/AAAA): ");
+		denLugar[i] <- LeerTextoNoVacio("Lugar del hecho: ");
+		denDescripcion[i] <- LeerTextoNoVacio("Descripcion breve: ");
+		denEstado[i] <- 1;
+		fraTipo[i] <- 0;
+		fraEntidad[i] <- "-";
+		fraMonto[i] <- 0;
+		Si denCategoria[i] = 8 Entonces
+			RegistrarDatosFraude(i, fraTipo, fraEntidad, fraMonto);
+		FinSi
+		nuevaCant <- i;
+		Escribir "";
+		Escribir "Denuncia registrada con ID ", IdDeDenuncia(i), " (estado: ", NombreEstado(1), ").";
+	FinSi
+FinSubProceso
+
+
+// =====================================================================
+//  MODULO: FRAUDES BANCARIOS VIRTUALES
+// =====================================================================
+
+SubProceso RegistrarDatosFraude(i, fraTipo, fraEntidad, fraMonto)
+	Escribir "--- Datos adicionales: fraude bancario virtual ---";
+	MostrarTiposFraude();
+	fraTipo[i] <- LeerEnteroEnRango("Tipo de fraude: ", 1, 3);
+	fraEntidad[i] <- LeerTextoNoVacio("Banco o billetera virtual afectada: ");
+	fraMonto[i] <- LeerMontoNoNegativo("Monto perdido (0 si no hubo perdida): $");
+	Si LeerSiNo("Mostrar la orientacion para el denunciante?") Entonces
+		MostrarOrientacionFraude(fraTipo[i]);
+	FinSi
+FinSubProceso
+
+SubProceso MostrarOrientacionFraude(tipo)
+	Escribir "";
+	Escribir "===== ORIENTACION BASICA: ", Mayusculas(NombreTipoFraude(tipo)), " =====";
+	Escribir "Pasos generales:";
+	Escribir " - Comunicarse YA con el banco por sus canales oficiales y pedir el bloqueo de tarjetas y cuentas.";
+	Escribir " - Guardar toda la evidencia: capturas, numeros, correos, comprobantes. No borrar mensajes.";
+	Escribir " - Nunca compartir claves, token, codigos de verificacion ni datos de tarjeta.";
+	Escribir "Pasos especificos:";
+	Segun tipo Hacer
+		1:
+			Escribir " - El banco nunca pide claves ni codigos por telefono, WhatsApp o redes sociales.";
+			Escribir " - Cortar la comunicacion y llamar al numero oficial que figura en la tarjeta.";
+			Escribir " - Si se hicieron pasar por un conocido, avisar a sus contactos.";
+		2:
+			Escribir " - No volver a ingresar al enlace recibido; verificar siempre la direccion del sitio.";
+			Escribir " - Si ingreso datos, cambiar las claves de inmediato y activar la verificacion en dos pasos.";
+			Escribir " - Reenviar el correo o SMS sospechoso al area de seguridad del banco.";
+		3:
+			Escribir " - Desconectar el dispositivo de internet y no usar el homebanking desde el.";
+			Escribir " - Desinstalar aplicaciones desconocidas y analizar el equipo con un antivirus.";
+			Escribir " - Cambiar las claves desde OTRO dispositivo seguro.";
+	FinSegun
+FinSubProceso
+
+SubProceso ConsultarOrientacion
+	Definir tipo Como Entero;
+	Escribir "";
+	Escribir "--- Orientacion sobre fraudes bancarios virtuales ---";
+	MostrarTiposFraude();
+	tipo <- LeerEnteroEnRango("Tipo de fraude: ", 1, 3);
+	MostrarOrientacionFraude(tipo);
+FinSubProceso
+
 
