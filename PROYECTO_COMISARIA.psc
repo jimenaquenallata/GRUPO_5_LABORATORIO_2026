@@ -413,4 +413,288 @@ SubProceso ConsultarOrientacion
 	MostrarOrientacionFraude(tipo);
 FinSubProceso
 
+// =====================================================================
+//  MODULO: CONSULTA DE DENUNCIAS
+// =====================================================================
+
+SubProceso MostrarResumen(i, denNombre, denCategoria, denEstado)
+	Escribir "ID ", IdDeDenuncia(i), " | ", denNombre[i], " | ", NombreCategoria(denCategoria[i]), " | ", NombreEstado(denEstado[i]);
+FinSubProceso
+
+SubProceso MostrarDetalle(i, denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto)
+	Escribir "";
+	Escribir "========== DENUNCIA ID ", IdDeDenuncia(i), " ==========";
+	Escribir "Estado:       ", NombreEstado(denEstado[i]);
+	Escribir "Denunciante:  ", denNombre[i];
+	Escribir "DNI:          ", denDni[i];
+	Escribir "Telefono:     ", denTelefono[i];
+	Escribir "Categoria:    ", NombreCategoria(denCategoria[i]);
+	Escribir "Fecha:        ", denFecha[i];
+	Escribir "Lugar:        ", denLugar[i];
+	Escribir "Descripcion:  ", denDescripcion[i];
+	Si denCategoria[i] = 8 Entonces
+		Escribir "Tipo fraude:  ", NombreTipoFraude(fraTipo[i]);
+		Escribir "Entidad:      ", fraEntidad[i];
+		Escribir "Monto:        $", fraMonto[i];
+		Si LeerSiNo("Ver orientacion para este tipo de fraude?") Entonces
+			MostrarOrientacionFraude(fraTipo[i]);
+		FinSi
+	FinSi
+FinSubProceso
+
+SubProceso ConsultarPorId(denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto, cantDen)
+	Definir id, pos Como Entero;
+	Escribir Sin Saltar "ID de la denuncia: ";
+	Leer id;
+	pos <- BuscarPorId(id, cantDen);
+	Si pos = 0 Entonces
+		Escribir "No existe una denuncia con ese ID.";
+	SiNo
+		MostrarDetalle(pos, denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto);
+	FinSi
+FinSubProceso
+
+SubProceso ConsultarPorDni(denNombre, denDni, denCategoria, denEstado, cantDen)
+	Definir dni Como Caracter;
+	Definir i, encontradas Como Entero;
+	dni <- LeerDni();
+	encontradas <- 0;
+	Para i <- 1 Hasta cantDen Con Paso 1 Hacer
+		Si denDni[i] = dni Entonces
+			MostrarResumen(i, denNombre, denCategoria, denEstado);
+			encontradas <- encontradas + 1;
+		FinSi
+	FinPara
+	Escribir "Denuncias encontradas: ", encontradas;
+FinSubProceso
+
+SubProceso ListarPorEstado(denNombre, denCategoria, denEstado, cantDen)
+	Definir est, i, encontradas Como Entero;
+	MostrarEstados(5);
+	est <- LeerEnteroEnRango("Estado a listar: ", 1, 5);
+	encontradas <- 0;
+	Para i <- 1 Hasta cantDen Con Paso 1 Hacer
+		Si denEstado[i] = est Entonces
+			MostrarResumen(i, denNombre, denCategoria, denEstado);
+			encontradas <- encontradas + 1;
+		FinSi
+	FinPara
+	Escribir "Denuncias en estado ", NombreEstado(est), ": ", encontradas;
+FinSubProceso
+
+SubProceso ListarPorCategoria(denNombre, denCategoria, denEstado, cantDen)
+	Definir cat, i, encontradas Como Entero;
+	MostrarCategorias();
+	cat <- LeerEnteroEnRango("Categoria a listar: ", 1, 9);
+	encontradas <- 0;
+	Para i <- 1 Hasta cantDen Con Paso 1 Hacer
+		Si denCategoria[i] = cat Entonces
+			MostrarResumen(i, denNombre, denCategoria, denEstado);
+			encontradas <- encontradas + 1;
+		FinSi
+	FinPara
+	Escribir "Denuncias de ", NombreCategoria(cat), ": ", encontradas;
+FinSubProceso
+
+SubProceso ListarTodas(denNombre, denCategoria, denEstado, cantDen)
+	Definir i Como Entero;
+	Para i <- 1 Hasta cantDen Con Paso 1 Hacer
+		MostrarResumen(i, denNombre, denCategoria, denEstado);
+	FinPara
+	Escribir "Total de denuncias: ", cantDen;
+FinSubProceso
+
+SubProceso MenuConsultas(denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto, cantDen)
+	Definir op Como Entero;
+	Si cantDen = 0 Entonces
+		Escribir "Todavia no hay denuncias registradas.";
+	SiNo
+		Repetir
+			Escribir "";
+			Escribir "--- CONSULTAR DENUNCIAS ---";
+			Escribir "1. Buscar por ID (ver detalle)";
+			Escribir "2. Buscar por DNI del denunciante";
+			Escribir "3. Listar por estado";
+			Escribir "4. Listar por categoria";
+			Escribir "5. Listar todas";
+			Escribir "0. Volver";
+			op <- LeerEnteroEnRango("Opcion: ", 0, 5);
+			Segun op Hacer
+				1:
+					ConsultarPorId(denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto, cantDen);
+				2:
+					ConsultarPorDni(denNombre, denDni, denCategoria, denEstado, cantDen);
+				3:
+					ListarPorEstado(denNombre, denCategoria, denEstado, cantDen);
+				4:
+					ListarPorCategoria(denNombre, denCategoria, denEstado, cantDen);
+				5:
+					ListarTodas(denNombre, denCategoria, denEstado, cantDen);
+			FinSegun
+		Hasta Que op = 0
+	FinSi
+FinSubProceso
+
+
+// =====================================================================
+//  MODULO: SEGUIMIENTO (CAMBIO DE ESTADO)
+// =====================================================================
+
+// El recepcionista puede pasar a Registrada, En gestion, Derivada o Resuelta.
+// Solo el administrador puede Cerrar. Una denuncia cerrada no se modifica.
+SubProceso CambiarEstado(rol, denNombre, denCategoria, denEstado, cantDen)
+	Definir id, pos, nuevo, maxEstado Como Entero;
+	Escribir Sin Saltar "ID de la denuncia: ";
+	Leer id;
+	pos <- BuscarPorId(id, cantDen);
+	Si pos = 0 Entonces
+		Escribir "No existe una denuncia con ese ID.";
+	SiNo
+		Si denEstado[pos] = 5 Entonces
+			Escribir "La denuncia esta cerrada y no puede modificarse.";
+		SiNo
+			MostrarResumen(pos, denNombre, denCategoria, denEstado);
+			Si rol = 1 Entonces
+				maxEstado <- 5;
+			SiNo
+				maxEstado <- 4;
+			FinSi
+			MostrarEstados(maxEstado);
+			nuevo <- LeerEnteroEnRango("Nuevo estado: ", 1, maxEstado);
+			Si nuevo = denEstado[pos] Entonces
+				Escribir "La denuncia ya se encuentra en ese estado.";
+			SiNo
+				denEstado[pos] <- nuevo;
+				Escribir "Estado actualizado a: ", NombreEstado(nuevo);
+			FinSi
+		FinSi
+	FinSi
+FinSubProceso
+
+
+// =====================================================================
+//  MODULO: ESTADISTICAS
+// =====================================================================
+
+SubProceso porc <- Porcentaje(parte, total)
+	Definir porc Como Real;
+	Si total = 0 Entonces
+		porc <- 0;
+	SiNo
+		porc <- Redon(parte * 1000 / total) / 10;
+	FinSi
+FinSubProceso
+
+SubProceso MostrarEstadisticas(denCategoria, denEstado, fraTipo, fraMonto, cantDen)
+	Definir i, k, cont, abiertas Como Entero;
+	Definir montoTotal Como Real;
+	Escribir "";
+	Escribir "========== ESTADISTICAS ==========";
+	Escribir "Total de denuncias: ", cantDen;
+	Si cantDen > 0 Entonces
+		Escribir "";
+		Escribir "Por estado:";
+		Para k <- 1 Hasta 5 Con Paso 1 Hacer
+			cont <- 0;
+			Para i <- 1 Hasta cantDen Con Paso 1 Hacer
+				Si denEstado[i] = k Entonces
+					cont <- cont + 1;
+				FinSi
+			FinPara
+			Escribir "  ", NombreEstado(k), ": ", cont, " (", Porcentaje(cont, cantDen), "%)";
+		FinPara
+		
+		abiertas <- 0;
+		Para i <- 1 Hasta cantDen Con Paso 1 Hacer
+			Si denEstado[i] <= 3 Entonces
+				abiertas <- abiertas + 1;
+			FinSi
+		FinPara
+		Escribir "  Casos abiertos: ", abiertas, " | Resueltos o cerrados: ", cantDen - abiertas;
+		
+		Escribir "";
+		Escribir "Por categoria:";
+		Para k <- 1 Hasta 9 Con Paso 1 Hacer
+			cont <- 0;
+			Para i <- 1 Hasta cantDen Con Paso 1 Hacer
+				Si denCategoria[i] = k Entonces
+					cont <- cont + 1;
+				FinSi
+			FinPara
+			Escribir "  ", NombreCategoria(k), ": ", cont, " (", Porcentaje(cont, cantDen), "%)";
+		FinPara
+		
+		Escribir "";
+		Escribir "Fraudes bancarios virtuales por tipo:";
+		montoTotal <- 0;
+		Para k <- 1 Hasta 3 Con Paso 1 Hacer
+			cont <- 0;
+			Para i <- 1 Hasta cantDen Con Paso 1 Hacer
+				Si denCategoria[i] = 8 Y fraTipo[i] = k Entonces
+					cont <- cont + 1;
+					montoTotal <- montoTotal + fraMonto[i];
+				FinSi
+			FinPara
+			Escribir "  ", NombreTipoFraude(k), ": ", cont;
+		FinPara
+		Escribir "  Monto total denunciado por fraudes: $", montoTotal;
+	FinSi
+FinSubProceso
+
+
+// =====================================================================
+//  MODULO: MENUS POR ROL
+// =====================================================================
+
+// Devuelve la cantidad de denuncias al cerrar sesion
+SubProceso cantFinal <- MenuRecepcionista(nombreUsuario, denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto, cantDen, MAX_DEN)
+	Definir cantFinal, op Como Entero;
+	cantFinal <- cantDen;
+	Repetir
+		Escribir "";
+		Escribir "===== MENU RECEPCIONISTA (", nombreUsuario, ") =====";
+		Escribir "1. Registrar denuncia";
+		Escribir "2. Consultar denuncias";
+		Escribir "3. Actualizar estado de una denuncia";
+		Escribir "4. Orientacion sobre fraudes bancarios virtuales";
+		Escribir "0. Cerrar sesion";
+		op <- LeerEnteroEnRango("Opcion: ", 0, 4);
+		Segun op Hacer
+			1:
+				cantFinal <- RegistrarDenuncia(denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto, cantFinal, MAX_DEN);
+			2:
+				MenuConsultas(denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto, cantFinal);
+			3:
+				CambiarEstado(2, denNombre, denCategoria, denEstado, cantFinal);
+			4:
+				ConsultarOrientacion();
+		FinSegun
+	Hasta Que op = 0
+FinSubProceso
+
+// Devuelve la cantidad de usuarios al cerrar sesion (puede haber altas)
+SubProceso cantFinal <- MenuAdministrador(posUsr, usrNombre, usrClave, usrRol, usrActivo, cantUsr, MAX_USR, denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto, cantDen)
+	Definir cantFinal, op Como Entero;
+	cantFinal <- cantUsr;
+	Repetir
+		Escribir "";
+		Escribir "===== MENU ADMINISTRADOR (", usrNombre[posUsr], ") =====";
+		Escribir "1. Consultar denuncias";
+		Escribir "2. Controlar casos (cambiar estado / cerrar)";
+		Escribir "3. Estadisticas";
+		Escribir "4. Gestionar usuarios";
+		Escribir "0. Cerrar sesion";
+		op <- LeerEnteroEnRango("Opcion: ", 0, 4);
+		Segun op Hacer
+			1:
+				MenuConsultas(denNombre, denDni, denTelefono, denFecha, denLugar, denDescripcion, denCategoria, denEstado, fraTipo, fraEntidad, fraMonto, cantDen);
+			2:
+				CambiarEstado(1, denNombre, denCategoria, denEstado, cantDen);
+			3:
+				MostrarEstadisticas(denCategoria, denEstado, fraTipo, fraMonto, cantDen);
+			4:
+				cantFinal <- GestionarUsuarios(posUsr, usrNombre, usrClave, usrRol, usrActivo, cantFinal, MAX_USR);
+		FinSegun
+	Hasta Que op = 0
+FinSubProceso
 
