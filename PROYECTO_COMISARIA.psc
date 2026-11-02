@@ -137,22 +137,6 @@ SubProceso pos <- IniciarSesion(usrNombre, usrClave, usrActivo, cantUsr)
 	FinSi
 FinSubProceso
 
-// Devuelve la posicion del usuario con ese nombre, o 0 si no existe
-SubProceso pos <- BuscarUsuario(nombre, usrNombre, cantUsr)
-	Definir pos, i Como Entero;
-	Definir encontrado Como Logico;
-	pos <- 0;
-	encontrado <- Falso;
-	i <- 1;
-	Mientras i <= cantUsr Y NO encontrado Hacer
-		Si usrNombre[i] = nombre Entonces
-			encontrado <- Verdadero;
-			pos <- i;
-		FinSi
-		i <- i + 1;
-	FinMientras
-FinSubProceso
-
 SubProceso nombre <- NombreRol(rol)
 	Definir nombre Como Caracter;
 	Si rol = 1 Entonces
@@ -161,97 +145,6 @@ SubProceso nombre <- NombreRol(rol)
 		nombre <- "Recepcionista";
 	FinSi
 FinSubProceso
-
-SubProceso ListarUsuarios(usrNombre, usrRol, usrActivo, cantUsr)
-	Definir i Como Entero;
-	Escribir "--- Usuarios del sistema ---";
-	Para i <- 1 Hasta cantUsr Con Paso 1 Hacer
-		Si usrActivo[i] Entonces
-			Escribir i, ". ", usrNombre[i], " - ", NombreRol(usrRol[i]), " - Activo";
-		SiNo
-			Escribir i, ". ", usrNombre[i], " - ", NombreRol(usrRol[i]), " - Inactivo";
-		FinSi
-	FinPara
-FinSubProceso
-
-// Devuelve la nueva cantidad de usuarios (igual a la anterior si no se pudo agregar)
-SubProceso nuevaCant <- AltaUsuario(usrNombre, usrClave, usrRol, usrActivo, cantUsr, MAX_USR)
-	Definir nuevaCant Como Entero;
-	Definir nombre Como Caracter;
-	nuevaCant <- cantUsr;
-	Si cantUsr >= MAX_USR Entonces
-		Escribir "No se pueden agregar mas usuarios.";
-	SiNo
-		nombre <- LeerTextoNoVacio("Nombre de usuario nuevo: ");
-		Si BuscarUsuario(nombre, usrNombre, cantUsr) > 0 Entonces
-			Escribir "Ya existe un usuario con ese nombre.";
-		SiNo
-			nuevaCant <- cantUsr + 1;
-			usrNombre[nuevaCant] <- nombre;
-			usrClave[nuevaCant] <- LeerTextoNoVacio("Clave: ");
-			Escribir "1. Administrador";
-			Escribir "2. Recepcionista";
-			usrRol[nuevaCant] <- LeerEnteroEnRango("Rol: ", 1, 2);
-			usrActivo[nuevaCant] <- Verdadero;
-			Escribir "Usuario creado.";
-		FinSi
-	FinSi
-FinSubProceso
-
-SubProceso ActivarDesactivarUsuario(posActual, usrNombre, usrRol, usrActivo, cantUsr)
-	Definir pos Como Entero;
-	Si cantUsr = 0 Entonces
-		Escribir "No hay usuarios cargados.";
-	SiNo
-		ListarUsuarios(usrNombre, usrRol, usrActivo, cantUsr);
-		pos <- LeerEnteroEnRango("Numero de usuario: ", 1, cantUsr);
-		Si pos = posActual Entonces
-			Escribir "No puede desactivar su propio usuario.";
-		SiNo
-			usrActivo[pos] <- NO usrActivo[pos];
-			Si usrActivo[pos] Entonces
-				Escribir "Usuario ", usrNombre[pos], " activado.";
-			SiNo
-				Escribir "Usuario ", usrNombre[pos], " desactivado.";
-			FinSi
-		FinSi
-	FinSi
-FinSubProceso
-
-SubProceso CambiarClaveUsuario(usrNombre, usrClave, usrRol, usrActivo, cantUsr)
-	Definir pos Como Entero;
-	ListarUsuarios(usrNombre, usrRol, usrActivo, cantUsr);
-	pos <- LeerEnteroEnRango("Numero de usuario: ", 1, cantUsr);
-	usrClave[pos] <- LeerTextoNoVacio("Nueva clave: ");
-	Escribir "Clave actualizada.";
-FinSubProceso
-
-// Devuelve la cantidad de usuarios al salir (puede haber aumentado)
-SubProceso cantFinal <- GestionarUsuarios(posActual, usrNombre, usrClave, usrRol, usrActivo, cantUsr, MAX_USR)
-	Definir cantFinal, op Como Entero;
-	cantFinal <- cantUsr;
-	Repetir
-		Escribir "";
-		Escribir "--- GESTION DE USUARIOS ---";
-		Escribir "1. Listar usuarios";
-		Escribir "2. Agregar usuario";
-		Escribir "3. Activar / desactivar usuario";
-		Escribir "4. Cambiar clave de un usuario";
-		Escribir "0. Volver";
-		op <- LeerEnteroEnRango("Opcion: ", 0, 4);
-		Segun op Hacer
-			1:
-				ListarUsuarios(usrNombre, usrRol, usrActivo, cantFinal);
-			2:
-				cantFinal <- AltaUsuario(usrNombre, usrClave, usrRol, usrActivo, cantFinal, MAX_USR);
-			3:
-				ActivarDesactivarUsuario(posActual, usrNombre, usrRol, usrActivo, cantFinal);
-			4:
-				CambiarClaveUsuario(usrNombre, usrClave, usrRol, usrActivo, cantFinal);
-		FinSegun
-	Hasta Que op = 0
-FinSubProceso
-
 
 // =====================================================================
 //  MODULO: CATALOGOS (nombres de categorias, estados y fraudes)
@@ -682,7 +575,6 @@ SubProceso cantFinal <- MenuAdministrador(posUsr, usrNombre, usrClave, usrRol, u
 		Escribir "1. Consultar denuncias";
 		Escribir "2. Controlar casos (cambiar estado / cerrar)";
 		Escribir "3. Estadisticas";
-		Escribir "4. Gestionar usuarios";
 		Escribir "0. Cerrar sesion";
 		op <- LeerEnteroEnRango("Opcion: ", 0, 4);
 		Segun op Hacer
@@ -692,8 +584,6 @@ SubProceso cantFinal <- MenuAdministrador(posUsr, usrNombre, usrClave, usrRol, u
 				CambiarEstado(1, denNombre, denCategoria, denEstado, cantDen);
 			3:
 				MostrarEstadisticas(denCategoria, denEstado, fraTipo, fraMonto, cantDen);
-			4:
-				cantFinal <- GestionarUsuarios(posUsr, usrNombre, usrClave, usrRol, usrActivo, cantFinal, MAX_USR);
 		FinSegun
 	Hasta Que op = 0
 FinSubProceso
